@@ -1,0 +1,28 @@
+﻿@using Grpc.Net.Client.Web;
+@using Grpc.Net.Client;
+@using front_client;
+
+@page "/counter"
+
+<h1>Counter</h1>
+
+<p>Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private string currentCount = "";
+
+    private async Task IncrementCount()
+    {
+        var channel = GrpcChannel.ForAddress("https://localhost:5001", new GrpcChannelOptions
+        {
+            HttpHandler = new GrpcWebHandler(new HttpClientHandler())
+        });
+
+        var client = new Greeter.GreeterClient(channel);
+        var response = await client.SayHelloAsync(new HelloRequest { Name = "Pedro" });
+
+        currentCount = response.Message;
+    }
+}
